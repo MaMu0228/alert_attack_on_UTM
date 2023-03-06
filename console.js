@@ -1,90 +1,58 @@
-////////   초기 IndexedDB 데이터베이스 생성 코드 
+const dbName = 'alert-db';
+const dbVersion = 1;
 
-var dbName = 'alert-db';
-var dbVersion = 1;
-var request = indexedDB.open(dbName, dbVersion);
+// IndexedDB 오픈
+const request = indexedDB.open(dbName, dbVersion);
 
-request.onerror = function(event) {
-    console.log("cant open db", event.target.errorCode);  
+// 데이터베이스 업그레이드 필요 시
+request.onupgradeneeded = function(event) {
+  const db = event.target.result;
+
+  // Object Store 생성
+  const objectStore = db.createObjectStore("musicStore", { keyPath: "id" });
+
+  // 'title'란 이름의 Index 추가하는데, 이 인덱스는 'title'이란 필드를 이용해서 
+  // 새로운 1, 2, 3 ,4 와 같은 인덱스를 만듦, unique가 false이므로 중복된 값들이 있어도 허용
+  objectStore.createIndex("title", "title", { unique: false });
 };
 
-///////    테이블 만들기
+// 에러 핸들링
+request.onerror = function(event) {
+  console.error("Database error: ", event.target.errorCode);  
+};
 
+// 데이터베이스 연결 성공 시
 request.onsuccess = function(event) {
-    let db = event.target.result;
-    let objectStore = db.createObjectStore("musicStore", {keyPath: "id"});    
-}
+  const db = event.target.result;
 
-///////    테이블을 열고 데이터 추가하기
-request.onsuccess = function(event) {
-    let db = event.target.result;
-    let transaction = db.transaction("musicStore", "readwrite");
-    let objectStore = transaction.objectStore("musicStore");
-    let request = objectStore.add({id:1, name:"chan", age:26});
-}
+  // Transaction 시작
+  const transaction = db.transaction("books", "readwrite");
 
-////// 테이블 열고 데이터 가져오기
-request.onsuccess = function(event) {
-    let db = event.target.result;
-    let transaction = db.transaction("musicStore", "readonly");
-    let objectStore = transaction.objectStore("musicStore");
-    let request = objectStore.get(1);
-}
+  // Object Store 가져오기
+  const objectStore = transaction.objectStore("books");
 
+  // 데이터 추가
+  objectStore.add({id: 1, title: "JavaScript: The Definitive Guide", author: "David Flanagan"});
+  objectStore.add({id: 2, title: "Eloquent JavaScript", author: "Marijn Haverbeke"});
+  objectStore.add({id: 3, title: "You Don't Know JS", author: "Kyle Simpson"});
 
+  // Transaction 완료 시
+  transaction.oncomplete = function(event) {
+    console.log("Data added successfully");
 
+    // Transaction 시작
+    const transaction = db.transaction("books", "readonly");
 
+    // Object Store 가져오기
+    const objectStore = transaction.objectStore("books");
 
+    // Index를 이용하여 데이터 가져오기
+    const index = objectStore.index("title");
+    const request = index.getAll();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    request.onsuccess = function(event) {
+      const books = event.target.result;
+      console.log(books);
+    };
+  };
+};
