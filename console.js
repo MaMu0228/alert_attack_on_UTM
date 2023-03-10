@@ -94,4 +94,36 @@ function playMusicFromDB(id) {
 
 /////////// 위 코드들을 먼저 실행해 노래 파일을 업로드 후 밑에 코드 실행
 
-playMusicFromDB(1);
+// 요청할 URL
+let URL = 'https://example.com';
+let attackArray = ['value1', 'value2', 'value3'];
+
+// URL에서 비동기적으로 요청을 보내 받은 데이터에서 특정 클래스의 데이터를 가져오고
+// 배열들을 비교해, 일치하는 게 있을 시 노래를 재생하는 코드
+function getDataFromUrl() {
+  let sipArray = [];
+
+  fetch(URL)
+    .then(response => response.text())
+    .then(data => {
+      const parser = new DOMParser();
+      const htmlDoc = parser.parseFromString(data, 'text/html');
+      const elements = htmlDoc.querySelectorAll('.foo');
+
+      elements.forEach(element => {
+        sipArray.push(element.textContent.trim());
+      });
+
+      attackArray.forEach(value => {
+        if (sipArray.includes(value)) {
+          playMusicFromDB(1);
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+setInterval(getDataFromUrl, 10000);
+
