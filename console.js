@@ -114,12 +114,12 @@ function getDataFromUrl() {
         sipArray.push(element.textContent.trim());
       });
 
-      attackArray.forEach(value => {
+      attackArray.some(value => {
         if (sipArray.includes(value)) {
-          playMusicFromDB(1);
+            playMusicFromDB(1);
+            return true;
         }
-      });
-    })
+    });
     .catch(error => {
       console.error('Error:', error);
     });
