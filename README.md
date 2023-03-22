@@ -9,15 +9,25 @@ It catures packets which are you want to alert, and literally alert with song.
 노래를 틀어 알려주는 소스코드입니다.
 
 **** '브라우저 console'에서 실행합니다.****
+
 코드를 실행하기 전 
+
 // 요청할 URL, UTM에서 10초마다 새로고침하는 페이지 URL을 넣으면 됨, 네이버는 테스트용
+
 let URL = 'https://www.naver.com/';
+
 // 알람을 울릴 특정 IP주소, '환율'은 네이버에서 테스트할 때를 위한 용도
+
 let attackArray = ['환율', 'value2', 'value3', 'etc...'];
+
 // 쿠키 지속 시간, 초 단위
+
 let COOKIE_TIME = 60;
+
 // 찾을 주소 값을 갖고 있는 클래스 이름, 
+
 let CLASS_NAME = ".stock_title"
+
 여기의 코드 값들을 바꿔주시기 발랍니다.
 
 
