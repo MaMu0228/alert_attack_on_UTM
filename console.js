@@ -141,7 +141,7 @@ function checkCookie(name) {
 // 요청할 URL, 네이버는 테스트용
 let URL = 'https://www.naver.com/';
 // 테스트용 예시
-let attackArray = ['환율', 'value2', 'value3', 'etc...'];
+let attackArray = ['환율', '증시', 'value3', 'etc...'];
 // 쿠키 지속 시간, 초 단위
 let COOKIE_TIME = 60;
 // 찾을 주소 값을 갖고 있는 클래스 이름, 
@@ -164,12 +164,12 @@ function getDataFromUrl() {
       const htmlDoc = parser.parseFromString(data, 'text/html');
       // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
       const elements = htmlDoc.querySelectorAll(CLASS_NAME);
-      
+      // fetch로 받은 페이지에서 특정 클래스로 받은 데이터들의 공백을 제거하고, sipArray배열에 넣기
       elements.forEach(element => {
         sipArray.push(element.textContent.trim());
       });
-
-      const matchingValue = sipArray.find(value => attackArray.includes(value));
+      // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
+      let matchingValue = sipArray.find(value => attackArray.includes(value));
       
       if (typeof matchingValue !== 'undefined' && !checkCookie("attack_" + matchingValue)){
         playMusicFromDB(1);
