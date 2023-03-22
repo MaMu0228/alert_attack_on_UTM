@@ -133,33 +133,6 @@ function checkCookie(name) {
   return false;
 }
 
-let audio; // audio 변수를 함수 외부에서 선언
-
-// 음악재생
-function playMusicFromDB(id) {
-  const transaction = db.transaction([DB_STORE_NAME], 'readonly');
-  const objectStore = transaction.objectStore(DB_STORE_NAME);
-  // id 인수에 담김 숫자로 오브젝트 스토어에서 데이터를 가져와 request에 넣음
-  const request = objectStore.get(id);
-
-  // request라는 변수에 오브젝트를 불러오는 코드가 실패해 onerror 이벤트 발생시 실행
-  request.onerror = function(event) {
-    console.error('음악 파일 불러오기 오류:', event.target.errorCode);
-  };
-  // request라는 변수에 오브젝트를 불러오는 코드가 성공해 onsuccess 이벤트 발생시 실행
-  request.onsuccess = function(event) {
-    const musicBlob = event.target.result.music;
-    const audioURL = URL.createObjectURL(musicBlob);
-
-    var audio = new Audio(audioURL);
-    audio.controls = true;
-    audio.play(); // 음악 파일 재생
-
-    document.body.appendChild(audio);
-
-    console.log('음악 파일 재생');
-  };
-};  
 
 /////////// 위 코드들을 먼저 실행해 노래 파일을 업로드 후 밑에 코드 실행
 
@@ -169,6 +142,10 @@ function playMusicFromDB(id) {
 let URL = 'https://www.naver.com/';
 // 테스트용 예시
 let attackArray = ['환율', 'value2', 'value3', 'etc...'];
+// 쿠키 지속 시간, 초 단위
+let COOKIE_TIME = 60;
+// 찾을 주소 값을 갖고 있는 클래스 이름, 
+let CLASS_NAME = ".stock_title"
 
 // URL에서 비동기적으로 요청을 보내 받은 데이터에서 특정 클래스의 데이터를 가져오고
 // 배열들을 비교해, 일치하는 게 있을 시 노래를 재생하는 코드
@@ -186,7 +163,7 @@ function getDataFromUrl() {
       // response.text를 /text/html로 바꾼다
       const htmlDoc = parser.parseFromString(data, 'text/html');
       // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
-      const elements = htmlDoc.querySelectorAll('.stock_title');
+      const elements = htmlDoc.querySelectorAll(CLASS_NAME);
       
       elements.forEach(element => {
         sipArray.push(element.textContent.trim());
@@ -196,7 +173,7 @@ function getDataFromUrl() {
       
       if (typeof matchingValue !== 'undefined' && !checkCookie("attack_" + matchingValue)){
         playMusicFromDB(1);
-        setCookie("attack_" + matchingValue, matchingValue, 20);
+        setCookie("attack_" + matchingValue, matchingValue, COOKIE_TIME);
       }
     /*
       if (sipArray.some(value => attackArray.includes(value))) {
