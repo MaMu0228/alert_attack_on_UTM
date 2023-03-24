@@ -37,13 +37,24 @@ request.onupgradeneeded = function(event) {
   console.log('object store 생성 완료');
 };
 
+/*
 // 파일 업로드 창 생성
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
+fileInput.style.zIndex = '9999'; // 스타일 추가
 fileInput.addEventListener('change', uploadMusic);
 
-// 화면 하단에 파일 선택 창을 만듦
-document.body.appendChild(fileInput);
+// 화면 맨 위에 파일 선택 창을 만듦
+document.body.insertBefore(fileInput, document.body.firstChild);
+*/
+
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+
+// 파일 선택 창 띄우기
+fileInput.click();
+
+fileInput.addEventListener('change', uploadMusic);
 
 function uploadMusic(event) {
   // 파일을 file에 저장
