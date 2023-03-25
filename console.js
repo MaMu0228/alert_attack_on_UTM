@@ -141,7 +141,7 @@ function checkCookie(name) {
 // #############################################################
 
 
-//★★★▼▼▼▼사용자가 설정 바꾸는 부분▼▼▼▼★★★
+//▼▼▼▼▼▼▼사용자가 설정 바꾸는 부분▼▼▼▼▼▼▼
 
 // 요청할 UTM의 관제 URL, 네이버는 테스트용
 let URL = 'https://www.naver.com/';
@@ -160,7 +160,7 @@ let CLASS_NAME1 = ".issue"
 // 찾을 목적지 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME2 = '.news'
 
-//★★★▲▲▲▲사용자가 설정 바꾸는 부분▲▲▲▲★★★
+//▲▲▲▲▲▲▲▲사용자가 설정 바꾸는 부분▲▲▲▲▲▲▲▲
 
 
 /*#######################################
@@ -198,11 +198,11 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
       // for...of 구문 사용
       for (const element of elements) {
         // 디버깅 용
-        console.log("element값 : " + element.textContent.trim());
+        console.log("*디버깅용* element값 : " + element.textContent.trim());
         sipArray.push(element.textContent.trim());
       }
       // 디버깅 용
-      console.log("CLASS_NAME1 넣은 sipArray: " + sipArray);    
+      console.log("*디버깅용* CLASS_NAME1 넣은 sipArray: " + sipArray);    
       
       // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
       let matchingValue = [];
@@ -222,11 +222,11 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
       // element2에 있는 값들을 element에 넣고, element 내 데이터를 공백 제거 후 저장
       for (const element of elements2) {
         // 디버깅용
-        console.log("element2값 : " + element.textContent.trim());
+        console.log("*디버깅용* element2값 : " + element.textContent.trim());
         dipArray.push(element.textContent.trim());
       }
       // 디버깅용
-      console.log("CLASS_NAME2 넣은 이후 dipArray: " + dipArray);    
+      console.log("*디버깅용* CLASS_NAME2 넣은 이후 dipArray: " + dipArray);    
       
       // dipArray와 attack_Array 비교 후 일치 값이 있을 시 일치 값을 matchingValue에 추가함
       matchingValue.push(...dipArray.filter(value => attackArray.includes(value)));
