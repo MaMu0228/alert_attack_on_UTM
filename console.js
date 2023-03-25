@@ -152,7 +152,8 @@ let attackArray = ['환율', '증시', 'value3', 'etc...',
                   "'봄바람 살랑∼' 전국 벚꽃 명소마다 상춘객 '북적'", 
                    "저녁방송 메인뉴스 보기"];
 
-// 쿠키 지속 시간, 초 단위
+// 관제 때 지속할 패킷 시간만큼 설정해주는 쿠키 지속 시간, 초 단위
+// ex) 만약 관제하는 패킷이 1시간 내라면, "COOKIE_TIME = 3600"으로 설정
 let COOKIE_TIME = 60;
 // 찾을 src 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME1 = ".issue"
@@ -196,10 +197,11 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
       
       // for...of 구문 사용
       for (const element of elements) {
+        // 디버깅 용
         console.log("element값 : " + element.textContent.trim());
         sipArray.push(element.textContent.trim());
       }
-
+      // 디버깅 용
       console.log("CLASS_NAME1 넣은 sipArray: " + sipArray);    
       
       // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
@@ -210,34 +212,35 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
  #start   CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
 ****************************************/
 
-// 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
+      // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
       const elements2 = htmlDoc.querySelectorAll(CLASS_NAME2);
       
       if (typeof elements2 === 'undefined'){
         console.log("elements2가 비어있습니다");
       }
       
-      // for...of 구문 사용
+      // element2에 있는 값들을 element에 넣고, element 내 데이터를 공백 제거 후 저장
       for (const element of elements2) {
+        // 디버깅용
         console.log("element2값 : " + element.textContent.trim());
         dipArray.push(element.textContent.trim());
       }
-
+      // 디버깅용
       console.log("CLASS_NAME2 넣은 이후 dipArray: " + dipArray);    
       
-      // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
-      
+      // dipArray와 attack_Array 비교 후 일치 값이 있을 시 일치 값을 matchingValue에 추가함
       matchingValue.push(...dipArray.filter(value => attackArray.includes(value)));
 
 /**************************************
  #start   두 클래스(sip, dip)에서 가져와 저장한 배열을 공격 IP와 비교하는
  부분
 ****************************************/     
-      
+      // 디버깅용
       console.log("### matchingValue :" + matchingValue);
       // 배열 내 중복 값을 제거 하기 위해 집합으로 변경하고, 다시 배열로 바꿈
+      // 디버깅용
       console.log("###중복 제거 후### matchingValue :  " + matchingValue)
-
+      
       for (let i = 0; i <= matchingValue.length; i++){
         if (typeof matchingValue[i] !== 'undefined' && !checkCookie("attack_" + matchingValue[i])){
           playMusicFromDB(1);
