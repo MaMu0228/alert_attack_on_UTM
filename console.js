@@ -154,16 +154,21 @@ let URL = 'https://www.naver.com/';
 // 테스트용 예시
 let attackArray = ['환율', '증시', 'value3', 'etc...', 
                    '서울 도심 대규모 집회·행사에 교통정체 극심', '민주 "檢, 김용 재판서 혐의 입증 불리한 진술 삭제…조작수사"' 
-                  , "테라 '20% 수익보장'에 투자금 50배 급증…美회계사도 속았다" ];
+                  , "테라 '20% 수익보장'에 투자금 50배 급증…美회계사도 속았다",
+                  "'봄바람 살랑∼' 전국 벚꽃 명소마다 상춘객 '북적'", 
+                   "저녁방송 메인뉴스 보기"];
 // 쿠키 지속 시간, 초 단위
-let COOKIE_TIME = 600;
-// 찾을 주소 값을 갖고 있는 클래스 이름, 
-let CLASS_NAME = ".issue"
+let COOKIE_TIME = 60;
+// 찾을 src 주소 값을 갖고 있는 클래스 이름
+let CLASS_NAME1 = ".issue"
 
+// 찾을 목적지 주소 값을 갖고 있는 클래스 이름
+let CLASS_NAME2 = '.news'
 // URL에서 비동기적으로 요청을 보내 받은 데이터에서 특정 클래스의 데이터를 가져오고
 // 배열들을 비교해, 일치하는 게 있을 시 노래를 재생하는 코드
 function getDataFromUrl() {
   let sipArray = [];
+  let dipArray = [];
 
   // URL로 비동기 요청 전송
   fetch(URL)
@@ -176,10 +181,13 @@ function getDataFromUrl() {
       
       // response.text를 /text/html로 바꾼다
       const htmlDoc = parser.parseFromString(data, 'text/html');
-      
-      // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
-      const elements = htmlDoc.querySelectorAll(CLASS_NAME);
 
+/**************************************
+ #start   CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
+****************************************/
+      // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
+      const elements = htmlDoc.querySelectorAll(CLASS_NAME1);
+      
       if (typeof elements === 'undefined'){
         console.log("elements가 비어있습니다");
       }
@@ -190,12 +198,40 @@ function getDataFromUrl() {
         sipArray.push(element.textContent.trim());
       }
 
-      console.log("sipArray: " + sipArray);    
+      console.log("CLASS_NAME1 넣은 sipArray: " + sipArray);    
       
       // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
-      let matchingValue = []
+      let matchingValue = [];
       matchingValue = sipArray.filter(value => attackArray.includes(value));
-      //matchingValue.push(sipArray.find(value => attackArray.includes(value)));
+      
+/**************************************
+ #start   CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
+****************************************/
+
+// 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
+      const elements2 = htmlDoc.querySelectorAll(CLASS_NAME2);
+      
+      if (typeof elements2 === 'undefined'){
+        console.log("elements2가 비어있습니다");
+      }
+      
+      // for...of 구문 사용
+      for (const element of elements2) {
+        console.log("element2값 : " + element.textContent.trim());
+        dipArray.push(element.textContent.trim());
+      }
+
+      console.log("CLASS_NAME2 넣은 이후 dipArray: " + dipArray);    
+      
+      // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
+      
+      matchingValue.push(...dipArray.filter(value => attackArray.includes(value)));
+
+/**************************************
+ #start   두 클래스(sip, dip)에서 가져와 저장한 배열을 공격 IP와 비교하는
+ 부분
+****************************************/     
+      
       console.log("### matchingValue :" + matchingValue);
 
       for (let i = 0; i <= matchingValue.length; i++){
@@ -205,19 +241,16 @@ function getDataFromUrl() {
           console.log("attack_" + matchingValue[i] + "쿠키를 만들었습니다.");
         }
       }
-    /*
-      if (sipArray.some(value => attackArray.includes(value))) {
-        playMusicFromDB(1);
-        setCookie("attack_" + value, value, 20);
-      }
-    })
-    */
     })
     .catch(error => {
       console.error('Error:', error);
     });
     // 배열 내 중복 값을 제거 하기 위해 집합으로 변경하고, 다시 배열로 바꿈
 }
+
+/**************************************
+ #end   
+****************************************/
 
 // 특정 시간마다 코드 실행, 시간 단위는 밀리초
 setInterval(getDataFromUrl, 10000);
