@@ -194,14 +194,15 @@ function getDataFromUrl() {
       
       // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
       let matchingValue = []
-      matchingValue.push(sipArray.find(value => attackArray.includes(value)));
+      matchingValue = sipArray.filter(value => attackArray.includes(value));
+      //matchingValue.push(sipArray.find(value => attackArray.includes(value)));
       console.log("### matchingValue :" + matchingValue);
 
       for (let i = 0; i <= matchingValue.length; i++){
-        if (typeof matchingValue !== 'undefined' && !checkCookie("attack_" + matchingValue)){
+        if (typeof matchingValue[i] !== 'undefined' && !checkCookie("attack_" + matchingValue[i])){
           playMusicFromDB(1);
-          setCookie("attack_" + matchingValue, matchingValue, COOKIE_TIME);
-          console.log("attack_" + matchingValue + "쿠키를 만들었습니다.");
+          setCookie("attack_" + matchingValue[i], matchingValue[i], COOKIE_TIME);
+          console.log("attack_" + matchingValue[i] + "쿠키를 만들었습니다.");
         }
       }
     /*
