@@ -1,12 +1,14 @@
 
 /***************************
-이 코드 실행 메뉴얼
-
+    Made By MaMu0228
+ 
+*메뉴얼
 1. 먼저 UTM에 로그인을 합니다.
-2. UTM 로그인 후, 룰을 적용해 거부 패킷을 보여주는 화면으로 이동합니다.
+2. UTM 로그인 후, 룰을 적용해 관제하는 화면으로 이동합니다.
 3. console을 키고 '#i)' 코드를 실행해 indexedDB 생성 코드를 실행합니다, 파일 선택창이 나오면 노래를
 선택해서 업로드 합니다.
-4. '#ii)' 코드를 실행해 10초마다 공격 탐지 프로세스를 실행합니다.
+4. //★★★▼▼▼▼설정 하는 부분▼▼▼▼★★★ 의 밑 부분을 자기 UTM 관제에 맞춰 설정한 다음
+5. '#ii)'' 부터 끝까지 모두 복사해서 console에 붙여서 실행합니다.
 5. 만약 공격이 탐지 돼 노래가 재생될 경우, 그냥 맨 밑에 생긴 Audio 객체의 멈춤 버튼을 누르면 됩니다.
 
 ****************************/
@@ -36,17 +38,6 @@ request.onupgradeneeded = function(event) {
   const objectStore = db.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
   console.log('object store 생성 완료');
 };
-
-/*
-// 파일 업로드 창 생성
-const fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.style.zIndex = '9999'; // 스타일 추가
-fileInput.addEventListener('change', uploadMusic);
-
-// 화면 맨 위에 파일 선택 창을 만듦
-document.body.insertBefore(fileInput, document.body.firstChild);
-*/
 
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
@@ -86,7 +77,6 @@ function saveMusicToDB(musicBlob) {
 
   request.onsuccess = function(event) {
     console.log('음악 파일 저장 완료');
-    
   };
 }
 
@@ -128,10 +118,9 @@ function setCookie(cookie_name, cookie_value, seconds) {
   document.cookie = cookie_name + "=" + cookie_value + ";" + expires + ";path=/";
 }
 
-// 이름으로 받은 쿠기가 있는지 확인하는 함수
+// 이름으로 받은 쿠기가 있는지, 전체 쿠키들을 뒤져서 확인하는 함수
 function checkCookie(name) {
   var cookies = document.cookie.split(";");
-
   for (var i = 0; i < cookies.length; i++) {
     var cookie = cookies[i];
     while (cookie.charAt(0) == " ") {
@@ -146,14 +135,17 @@ function checkCookie(name) {
 
 // #############################################################
 // #############################################################
-/////#ii) ↑↑↑↑위 코드들을 먼저 실행해 노래 파일을 업로드 후↑↑↑ 
-/////#ii-2) ↓↓↓↓ 밑에 코드 실행 ↓↓↓↓
+///#ii) ↑↑↑↑위 코드들을 먼저 실행해 노래 파일을 업로드 후↑↑↑ 
+///#ii-2) ↓↓↓↓ 밑에 코드 실행 ↓↓↓↓
 // #############################################################
 // #############################################################
 
+
+//★★★▼▼▼▼사용자가 설정 바꾸는 부분▼▼▼▼★★★
+
 // 요청할 UTM의 관제 URL, 네이버는 테스트용
 let URL = 'https://www.naver.com/';
-// 탐지할 문자열(소스IP + 목적지 IP 둘다 적으면 됩니다)
+// 탐지할 문자열 배열(소스IP + 목적지 IP 둘다 넣으면 됩니다)
 let attackArray = ['환율', '증시', 'value3', 'etc...', 
                    '서울 도심 대규모 집회·행사에 교통정체 극심', '민주 "檢, 김용 재판서 혐의 입증 불리한 진술 삭제…조작수사"' 
                   , "테라 '20% 수익보장'에 투자금 50배 급증…美회계사도 속았다",
@@ -164,10 +156,10 @@ let attackArray = ['환율', '증시', 'value3', 'etc...',
 let COOKIE_TIME = 60;
 // 찾을 src 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME1 = ".issue"
-
 // 찾을 목적지 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME2 = '.news'
 
+//★★★▲▲▲▲사용자가 설정 바꾸는 부분▲▲▲▲★★★
 
 
 /*#######################################
