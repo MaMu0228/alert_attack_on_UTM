@@ -152,11 +152,13 @@ function checkCookie(name) {
 // 요청할 URL, 네이버는 테스트용
 let URL = 'https://www.naver.com/';
 // 테스트용 예시
-let attackArray = ['환율', '증시', 'value3', 'etc...'];
+let attackArray = ['환율', '증시', 'value3', 'etc...', 
+                   '서울 도심 대규모 집회·행사에 교통정체 극심', '민주 "檢, 김용 재판서 혐의 입증 불리한 진술 삭제…조작수사"' 
+                  , "테라 '20% 수익보장'에 투자금 50배 급증…美회계사도 속았다" ];
 // 쿠키 지속 시간, 초 단위
-let COOKIE_TIME = 60;
+let COOKIE_TIME = 600;
 // 찾을 주소 값을 갖고 있는 클래스 이름, 
-let CLASS_NAME = ".stock_title"
+let CLASS_NAME = ".issue"
 
 // URL에서 비동기적으로 요청을 보내 받은 데이터에서 특정 클래스의 데이터를 가져오고
 // 배열들을 비교해, 일치하는 게 있을 시 노래를 재생하는 코드
@@ -171,20 +173,36 @@ function getDataFromUrl() {
     .then(data => {
       // DOMParser()란 객체를 만들고
       const parser = new DOMParser();
+      
       // response.text를 /text/html로 바꾼다
       const htmlDoc = parser.parseFromString(data, 'text/html');
+      
       // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
       const elements = htmlDoc.querySelectorAll(CLASS_NAME);
-      // fetch로 받은 페이지에서 특정 클래스로 받은 데이터들의 공백을 제거하고, sipArray배열에 넣기
-      elements.forEach(element => {
-        sipArray.push(element.textContent.trim());
-      });
-      // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
-      let matchingValue = sipArray.find(value => attackArray.includes(value));
+
+      if (typeof elements === 'undefined'){
+        console.log("elements가 비어있습니다");
+      }
       
-      if (typeof matchingValue !== 'undefined' && !checkCookie("attack_" + matchingValue)){
-        playMusicFromDB(1);
-        setCookie("attack_" + matchingValue, matchingValue, COOKIE_TIME);
+      // for...of 구문 사용
+      for (const element of elements) {
+        console.log("element값 : " + element.textContent.trim());
+        sipArray.push(element.textContent.trim());
+      }
+
+      console.log("sipArray: " + sipArray);    
+      
+      // sipArray에 들어있는 값들 중, attack_Array와 일치하는 값이 있는지 보고, 있을 시 matchingValue에 넣음
+      let matchingValue = []
+      matchingValue.push(sipArray.find(value => attackArray.includes(value)));
+      console.log("### matchingValue :" + matchingValue);
+
+      for (let i = 0; i <= matchingValue.length; i++){
+        if (typeof matchingValue !== 'undefined' && !checkCookie("attack_" + matchingValue)){
+          playMusicFromDB(1);
+          setCookie("attack_" + matchingValue, matchingValue, COOKIE_TIME);
+          console.log("attack_" + matchingValue + "쿠키를 만들었습니다.");
+        }
       }
     /*
       if (sipArray.some(value => attackArray.includes(value))) {
