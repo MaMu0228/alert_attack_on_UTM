@@ -36,11 +36,11 @@ let audio; // audio 객체용
 
 
 /*#######################################
- #start  
-URL에서 비동기적으로 요청을 보내 받은 데이터에서 특정 클래스의 데이터를 가져오고
-배열들을 비교해, 일치하는 게 있을 시 노래를 재생하는 코드
+ # 함수들 정의영역
 ########################################*/
 
+// 비동기적으로 URL에 fetch를 보내, 특정 클래스 내 데이터를 가져와
+// attackArray와 비교하는 함수
 function getDataFromUrl() {
   let sipArray = [];
   let dipArray = [];
@@ -81,7 +81,7 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
       matchingValue = sipArray.filter(value => attackArray.includes(value));
       
 /**************************************
- #start   CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
+CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
 ****************************************/
 
       // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
@@ -104,8 +104,7 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
       matchingValue.push(...dipArray.filter(value => attackArray.includes(value)));
 
 /**************************************
- #start   두 클래스(sip, dip)에서 가져와 저장한 배열을 공격 IP와 비교하는
- 부분
+두 클래스(sip, dip)에서 가져와 저장한 배열을 공격 IP와 비교하는 부분
 ****************************************/     
       // 디버깅용
       console.log("### matchingValue :" + matchingValue);
@@ -127,11 +126,8 @@ CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
     
 }
 
-/*#######################################
- #end  
-########################################*/
 
-// 음악재생
+// id를 받아 indexedDB에 저장된 음악 데이터를 다시 가져와 실행하는 함수
 function playMusicFromDB(id) {
   const transaction = db.transaction([DB_STORE_NAME], 'readonly');
   const objectStore = transaction.objectStore(DB_STORE_NAME);
@@ -181,6 +177,10 @@ function checkCookie(name) {
   }
   return false;
 }
+
+/*#######################################
+실행 코드들
+########################################*/
 
 // indexedDB 생성
 const DB_NAME = 'music_db';
@@ -244,9 +244,7 @@ function saveMusicToDB(musicBlob) {
 
   request.onsuccess = function(event) {
     console.log('음악 파일 저장 완료');
-    /*********** 중요 업데이트 예정 내용 ***********
-    이후 여기에 코드를 넣어서, 노래 업로드 후 바로 코드 실행되게 만들기
-    ***********************************************/
+    // ****** 공격 탐지 함수가 실행되는 부분 ******
     setInterval(getDataFromUrl, 10000);
   };
 }
