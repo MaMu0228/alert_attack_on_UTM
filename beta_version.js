@@ -77,6 +77,9 @@ function saveMusicToDB(musicBlob) {
 
   request.onsuccess = function(event) {
     console.log('음악 파일 저장 완료');
+    /*********** 중요 업데이트 예정 내용 ***********
+    이후 여기에 코드를 넣어서, 노래 업로드 후 바로 코드 실행되게 만들기
+    ***********************************************/
   };
 }
 
