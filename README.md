@@ -55,7 +55,7 @@ UTM URL의 'body'에서 sip와 dip 클래스 내 데이터를 가져와 특정 s
 XMLHttpRequest를 공부해 사용해보다가, 더 편한 fetch와 setInterval()를 통해 10초마다 갱신 패킷을 가져옴
 
 ★문제 6 : <br>
-i) UTM 페이지에서 테스트해보니, 관제 패킷들이 들어있을 'body'가 비어있는 html을 받음
+i) UTM 페이지에서 테스트해보니, 관제 패킷들이 들어있을 'body'가 비어있는 html을 받음<br>
 ii) 도대체 왜 html이 비어있는 지 원인 분석이 필요
 --
 (해결법) 2일 소요
