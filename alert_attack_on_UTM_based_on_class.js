@@ -16,6 +16,7 @@
 
 // 요청할 UTM의 관제 URL, 네이버는 테스트용
 let URL = 'https://www.naver.com/';
+
 // 탐지할 문자열 배열(소스IP + 목적지 IP 둘다 넣으면 됩니다)
 let attackArray = ['환율', '증시', 'value3', 'etc...', 
                    '서울 도심 대규모 집회·행사에 교통정체 극심', '민주 "檢, 김용 재판서 혐의 입증 불리한 진술 삭제…조작수사"' 
@@ -23,13 +24,19 @@ let attackArray = ['환율', '증시', 'value3', 'etc...',
                   "'봄바람 살랑∼' 전국 벚꽃 명소마다 상춘객 '북적'", 
                    "저녁방송 메인뉴스 보기"];
 
-// 관제 때 지속할 패킷 시간만큼 설정해주는 쿠키 지속 시간, 초 단위
-// ex) 만약 관제하는 패킷이 1시간 내라면, "COOKIE_TIME = 3600"으로 설정
-let COOKIE_TIME = 60;
 // 찾을 src 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME1 = ".issue"
+
 // 찾을 목적지 주소 값을 갖고 있는 클래스 이름
 let CLASS_NAME2 = '.news'
+
+// 한 sip가 몇 개의 서로 다른 dip를 가질 때 공격이라 간주할 지 정하는 개수입니다. 
+let ATTACK_COUNT = 10;
+
+
+// 공격이라 간주한 sip가 알람을 울리고나서, 언제 다시 알람을 울릴지 정하는 쿠키, 초 단위입니다.
+let COOKIE_TIME =  4000;
+
 
 //▲▲▲▲▲▲▲▲사용자가 설정 바꾸는 부분▲▲▲▲▲▲▲▲
 //＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠＠
@@ -62,6 +69,7 @@ function getDataFromUrl() {
 /**************************************
 CLASS_NAME1 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
 ****************************************/
+      
       // 만든 thmlDoc이란 변수에서 '.foo'란 클래스 내 있는 데이터를 가져와 elemets에 저장한다
       const elements = htmlDoc.querySelectorAll(CLASS_NAME1);
       
@@ -108,6 +116,7 @@ CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
 /**************************************
 두 클래스(sip, dip)에서 가져와 저장한 배열을 공격 IP와 비교하는 부분
 ****************************************/     
+      
       // 디버깅용
       console.log("### matchingValue :" + matchingValue);
       // 배열 내 중복 값을 제거 하기 위해 집합으로 변경하고, 다시 배열로 바꿈
@@ -127,6 +136,36 @@ CLASS_NAME2 처리해서 sipArray에 넣는 부분(소스 IP 처리 부분)
     });
     
 }
+
+
+/*
+jsonArray와 jsonArray에서 중복을 제거한 sipArray를 인수로 받아, 10개 이상 다른 dip를 가진
+sip를 공격이라 간주하고 노래를 트는 함수
+*/
+function checkRealAttack(jsonArray, sipArray) {
+
+  // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+  let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]:{}}), {});
+
+  const attackCounts = {};
+
+  for (const {sip, dip} of jsonArray){
+    
+    if (attackObjs.hasOwnProperty(sip)){
+      attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+      
+      if (!attackObjs[sip].hasOwnProperty(dip)){
+        attackObjs[sip][dip] = {};
+
+        if (attackCounts[sip] >= ATTACK_COUNT && !checkCookie("attack_" + sip)){
+          playMusicFromDB(1);
+          setCookie("attack_" + sip, sip, COOKIE_TIME);
+          console.log(sip + " 주소로부터 공격이 의심됩니다. ");
+        }
+      }
+    }
+  }
+};
 
 
 // id를 받아 indexedDB에 저장된 음악 데이터를 다시 가져와 실행하는 함수

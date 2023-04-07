@@ -1,6 +1,6 @@
 /********************************************************
 
-// alert_attack_on_UTM_based_on_json
+// alert_attack_on_UTM_based_on_json v1.1
 
 ★★★★★★ Made by MaMu0228 ★★★★★★
 
@@ -27,13 +27,20 @@ let attackArray = ['at.ta.ck.ip', '123.23.234.123'];
 // 공격이라 판단할 패킷에 적용된 정책 번호를 적습니다.
 let attackPolicy = ['number'];
 
-let COOKIE_TIME = 3600;
+// 한 sip가 몇 개의 서로 다른 dip를 가질 때 공격이라 간주할 지 정하는 개수입니다. 
+let ATTACK_COUNT = 10;
+
+
+// 공격이라 간주한 sip가 알람을 울리고나서, 언제 다시 알람을 울릴지 정하는 쿠키, 초 단위입니다.
+let COOKIE_TIME =  4000;
 
 
 //↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 변경하는 곳 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 // 공격 발생시 만들 오디오 객체 변수
 let audio
+
+
 
 function getDataFromURL() {
     let sipArray = [];
@@ -97,13 +104,17 @@ function getDataFromURL() {
 ////////////// attackArray 배열에 들어있는 주소가 있을 경우, 쿠키 생성 및 알람을 울리는 부분 ///////////////////                 
 
             for (let i =0; i <= matchingIpArray.length ; i++){
-                if (typeof matchingIpArray[i] !== 'undefined' && !checkCookie("attack_정책_" + matchingIpArray[i])){
+                if (typeof matchingIpArray[i] !== 'undefined' && !checkCookie("attack_" + matchingIpArray[i])){
                     playMusicFromDB(1);
-                    setCookie("attack_정책_" + matchingIpArray[i], matchingIpArray[i], COOKIE_TIME);
-                    console.log("!!!!! 정책_" + matchingIpArray[i] + " 에 해당하는 공격이 감지 됐습니다. !!!");
-                    console.log("attack_정책_" + matchingIpArray[i] + "쿠키를 만들었습니다.");
+                    setCookie("attack_" + matchingIpArray[i], matchingIpArray[i], COOKIE_TIME);
+                    console.log("!!!!! " + matchingIpArray[i] + " 에 해당하는 공격이 감지 됐습니다. !!!");
+                    console.log("attack_" + matchingIpArray[i] + "쿠키를 만들었습니다.");
                 }
             }
+
+          
+            checkRealAttack(objectList[1], sipArray);
+          
 
             console.log(" alert_attack_on_UTM_based_on_json is on working ");
             
@@ -113,7 +124,11 @@ function getDataFromURL() {
         })
 }
 
-// id를 받아 indexedDB에 저장된 음악 데이터를 다시 가져와 실행하는 함수
+//###########################
+/* 
+id를 받아 indexedDB에 저장된 음악 데이터를 다시 가져와 실행하는 함수
+*/
+//###########################
 function playMusicFromDB(id) {
   const transaction = db.transaction([DB_STORE_NAME], 'readonly');
   const objectStore = transaction.objectStore(DB_STORE_NAME);
@@ -141,7 +156,57 @@ function playMusicFromDB(id) {
   };
 };  
 
-// 쿠키 만드는 초 단위로 만드는 함수
+
+//#############################
+/* 
+노래를 업로드 시, 이진 파일로 변경하는 함수
+*/
+//#############################
+function uploadMusic(event) {
+  // 파일을 file에 저장
+  const file = event.target.files[0];
+  // FileReader() 객체를 만듦
+  const reader = new FileReader();
+  // FileReader 객체에 데이터가 담기는 이벤트 발생시, event.target.result(ArrayBuffer객체)를 blob객체로 만듦
+  reader.onload = function(event) {
+    const musicBlob = new Blob([event.target.result], { type: file.type });
+    // 만든 Blob 객체를 
+    saveMusicToDB(musicBlob);
+  };
+  // reader.onload 이벤트를 발생시키기 위한 코드로, 이진데이터 파일을 바이트 단위(ArrayBuffer)로 읽음
+  reader.readAsArrayBuffer(file);
+}
+
+//############################
+/* 
+indexedDB에 음악 파일 저장
+*/
+//############################
+function saveMusicToDB(musicBlob) {
+  // music_store라는 오브젝트 스토어를 readwrite로 지정하고
+  const transaction = db.transaction([DB_STORE_NAME], 'readwrite');
+  // 오브젝트 스토어를 열고
+  const objectStore = transaction.objectStore(DB_STORE_NAME);
+  // 받은 musicBlob을 저장함
+  const request = objectStore.put({ id:1,  music: musicBlob });
+
+  request.onerror = function(event) {
+    console.error('음악 파일 저장 오류:', event.target.errorCode);
+  };
+
+  request.onsuccess = function(event) {
+    console.log('음악 파일 저장 완료');
+    // ****** 노래 업로드 후 자동으로 10초마다 실행되는 부분 ******
+    setInterval(getDataFromUrl, 10000);
+    console.log('정상적으로 alert_attack_on_UTM_based_on_json이 실행되고 있습니다.')
+  };
+}
+
+//#################################
+/*
+쿠키 만드는 초 단위로 만드는 함수
+*/
+//#################################
 function setCookie(cookie_name, cookie_value, seconds) {
   var d = new Date();
   d.setTime(d.getTime() + (seconds * 1000));
@@ -149,7 +214,11 @@ function setCookie(cookie_name, cookie_value, seconds) {
   document.cookie = cookie_name + "=" + cookie_value + ";" + expires + ";path=/";
 }
 
-// 이름으로 받은 쿠기가 있는지, 전체 쿠키들을 뒤져서 확인하는 함수
+//################################
+/* 
+이름으로 받은 쿠기가 있는지, 전체 쿠키들을 뒤져서 확인하는 함수
+*/
+//################################
 function checkCookie(name) {
   var cookies = document.cookie.split(";");
   for (var i = 0; i < cookies.length; i++) {
@@ -164,8 +233,42 @@ function checkCookie(name) {
   return false;
 }
 
+//#########################################
+/*
+jsonArray와 jsonArray에서 중복을 제거한 sipArray를 인수로 받아, 10개 이상 다른 dip를 가진
+sip를 공격이라 간주하고 노래를 트는 함수
+*/
+//#########################################
+function checkRealAttack(jsonArray, sipArray) {
+
+  // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+  let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]:{}}), {});
+
+  const attackCounts = {};
+
+  for (const {sip, dip} of jsonArray){
+    
+    if (attackObjs.hasOwnProperty(sip)){
+      attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+      
+      if (!attackObjs[sip].hasOwnProperty(dip)){
+        attackObjs[sip][dip] = {};
+
+        if (attackCounts[sip] >= ATTACK_COUNT && !checkCookie("attack_" + sip)){
+          playMusicFromDB(1);
+          setCookie("attack_" + sip, sip, COOKIE_TIME);
+          console.log(sip + " 주소로부터 공격이 의심됩니다. ");
+        }
+      }
+    }
+  }
+};
+
+
+
+
 /*#######################################
-실행 코드들
+            실행 코드들
 ########################################*/
 
 // indexedDB 생성
@@ -198,43 +301,12 @@ fileInput.type = 'file';
 // 파일 선택 창 띄우기
 fileInput.click();
 
+// 노래 업로드 시 이벤트 실행
 fileInput.addEventListener('change', uploadMusic);
 
-function uploadMusic(event) {
-  // 파일을 file에 저장
-  const file = event.target.files[0];
-  // FileReader() 객체를 만듦
-  const reader = new FileReader();
-  // FileReader 객체에 데이터가 담기는 이벤트 발생시, event.target.result(ArrayBuffer객체)를 blob객체로 만듦
-  reader.onload = function(event) {
-    const musicBlob = new Blob([event.target.result], { type: file.type });
-    // 만든 Blob 객체를 
-    saveMusicToDB(musicBlob);
-  };
-  // reader.onload 이벤트를 발생시키기 위한 코드로, 이진데이터 파일을 바이트 단위(ArrayBuffer)로 읽음
-  reader.readAsArrayBuffer(file);
-}
 
-// indexedDB에 음악 파일 저장
-function saveMusicToDB(musicBlob) {
-  // music_store라는 오브젝트 스토어를 readwrite로 지정하고
-  const transaction = db.transaction([DB_STORE_NAME], 'readwrite');
-  // 오브젝트 스토어를 열고
-  const objectStore = transaction.objectStore(DB_STORE_NAME);
-  // 받은 musicBlob을 저장함
-  const request = objectStore.add({ music: musicBlob });
 
-  request.onerror = function(event) {
-    console.error('음악 파일 저장 오류:', event.target.errorCode);
-  };
 
-  request.onsuccess = function(event) {
-    console.log('음악 파일 저장 완료');
-    // ****** 노래 업로드 후 자동으로 10초마다 실행되는 부분 ******
-    setInterval(getDataFromUrl, 10000);
-    console.log('정상적으로 alert_attack_on_UTM_based_on_json이 실행되고 있습니다.')
-  };
-}
 
 
 
