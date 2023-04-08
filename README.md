@@ -9,9 +9,7 @@ then literally it catures packets which you want to alert with song.
 <br>
 1. when specific sip or dip packet go through UTM, alert 
 2. when packet go through UTM which is applied specific policy, alert
-<br>
 3. when packets, which one sip go to many and various dip, go through UTM, alert
-<br>
 4. when UTM logout, alert
  
 -----------한글------------
@@ -30,11 +28,8 @@ UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공
 ★ 기능들 ★
 <br>
 1. 특정 sip나 dip를 가진 패킷이 UTM에 들어올 경우, 알람을 울림
-<br>
 2. 특정 정책이 적용돼 차단되거나 허용된 패킷이 들어올 경우, 알람을 울림
-<br>
 3. 하나의 sip가 여러개의 dip를 가진 경우, 알람을 울림
-<br>
 4. UTM이 로그아웃된 경우, 알람을 울림
 <br>
 /*
