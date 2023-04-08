@@ -1,5 +1,7 @@
 # alert_attack_on_UTM
-It catures packets which you want to alert with song. 
+
+Copy all codes in JSfile and paste browser console after login UTM
+then literally it catures packets which you want to alert with song. 
 
 
 -----------한글------------
