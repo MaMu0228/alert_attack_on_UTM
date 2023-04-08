@@ -1,27 +1,43 @@
 # alert_attack_on_UTM
 
 Here are two version browser console JSfile, If your UTM work based on JSON, use "alert_attack_on_UTM_based_on_json.js", otherwise "alert_attack_on_UTM_based_on_class"
-<br>
+<br><br>
 Copy all codes in JSfile and paste browser console after log in UTM
 then literally it catures packets which you want to alert with song. 
 
-
+functions
+<br>
+1. when specific sip or dip packet go through UTM, alert 
+<br>
+2. when packet go through UTM which is applied specific policy, alert
+<br>
+3. when packets, which one sip go to many and various dip, go through UTM, alert
+<br>
+4. when UTM logout, alert
+ 
 -----------한글------------
 
-안랩의 UTM과 같은 곳에서 10초마다 패킷을 관제할 때, 특정 srcIP의 패킷이 검출 될 경우 
-노래를 틀어 알려주는 소스코드입니다.
-
+UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공격 알람 Javascript code 입니다.
+<br>
 관제 패킷이 "그냥 html의 body에 들어오는 경우"와 "JSON을 통해 받아오는 경우"를 나눠 스크립트를 만들었습니다.
-
-"그냥 html의 body에 들어오는 경우"엔 
---
+<br>
+<strong>"UTM의 관제 패킷 정보가 html의 body담겨 오는 경우"엔</strong> 
 'alert_attack_on_UTM_based_on_class.js'를 사용해주시고
-
-"JSON을 통해 받아오는 경우"엔
---
+<br>
+<strong>"UTM의 관제 패킷 정보가 JSON을 통해 오는 경우"엔</strong>
 'alert_attack_on_UTM_based_on_json.js'를 사용해주시면 됩니다.
 
-
+<br>
+기능들
+<br>
+1. 특정 sip나 dip를 가진 패킷이 UTM에 들어올 경우, 알람을 울림
+<br>
+2. 특정 정책이 적용돼 차단되거나 허용된 패킷이 들어올 경우, 알람을 울림
+<br>
+3. 하나의 sip가 여러개의 dip를 가진 경우, 알람을 울림
+<br>
+4. UTM이 로그아웃된 경우, 알람을 울림
+<br>
 /*
 ****** 개발하다 마주친 문제 및 고생한 점과 해결법들 ******
 
