@@ -16,7 +16,15 @@ UTM 로그인 후, 관제 룰을 적용한 URL로 fetch를 보내 받아온 JSON
 
 ********************************************************/
 
+
 //↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 변경하는 곳 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// UTM의 관제 룰을 적는 공간의 id를 넣으면 됩니다.
+let queryStringInput = document.querySelector('#queryString');
+let queryStringValue = queryStringInput.value;
+
+// 자동으로 UTM 룰을 가져와 JSON을 보내는 변수, URL대신 사용하시면 됩니다.
+let ruleURL = 'https://IP:PORT/log/total/totalList?json=true&take=200&skip=0&page=1&pageSize=200&queryString=' + encodeURIComponent(queryStringValue) + '&grid=true&searchType=0&searchFlag=true&dateRangeSelect=3600';
 
 // UTM 로그인 이후 룰을 적용한 다음 'F12 -> 네트워크'를 들어가서 JSON을 가져오는 URL을 적습니다.
 let = URL = 'https://UTM-URL-AFTER-SET-RULE'
@@ -47,7 +55,7 @@ function getDataFromURL() {
     let dipArray = [];
     let policyArray = [];
 
-    fetch(URL)
+    fetch(ruleURL)
         .then(response => response.text())
         .then(data => {
             const parser = new DOMParser();
@@ -198,7 +206,7 @@ function saveMusicToDB(musicBlob) {
     console.log('음악 파일 저장 완료');
     // ****** 노래 업로드 후 자동으로 10초마다 실행되는 부분 ******
     setInterval(getDataFromUrl, 10000);
-    console.log('정상적으로 alert_attack_on_UTM_based_on_json이 실행되고 있습니다.')
+    console.log('정상적으로 alert_attack_on_UTM_based_on_json이 실행되고 있습니다. ★ 스피커가 켜져있는 지 꼭 확인하세요! ★');
   };
 }
 
