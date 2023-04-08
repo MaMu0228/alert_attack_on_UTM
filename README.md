@@ -1,6 +1,8 @@
 # alert_attack_on_UTM
 
-Copy all codes in JSfile and paste browser console after login UTM
+Here are two version browser console JSfile, If your UTM work based on JSON, use "alert_attack_on_UTM_based_on_json.js", otherwise "alert_attack_on_UTM_based_on_class"
+<br>
+Copy all codes in JSfile and paste browser console after log in UTM
 then literally it catures packets which you want to alert with song. 
 
 
