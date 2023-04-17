@@ -1,6 +1,6 @@
 /********************************************************
 
-// alert_attack_on_UTM_based_on_json v1.1
+// alert_attack_on_UTM_based_on_json v1.2
 
 ★★★★★★ Made by MaMu0228 ★★★★★★
 
@@ -26,7 +26,7 @@ let queryStringValue = queryStringInput.value;
 // 자동으로 UTM 룰을 가져와 JSON을 보내는 변수, URL대신 사용하시면 됩니다.
 let ruleURL = 'https://IP:PORT/log/total/totalList?json=true&take=200&skip=0&page=1&pageSize=200&queryString=' + encodeURIComponent(queryStringValue) + '&grid=true&searchType=0&searchFlag=true&dateRangeSelect=3600';
 
-// UTM 로그인 이후 룰을 적용한 다음 'F12 -> 네트워크'를 들어가서 JSON을 가져오는 URL을 적습니다.
+// 위 'ruleURL'이 작동을 안할 경우, UTM 로그인 이후 룰을 적용한 다음 'F12 -> 네트워크'를 들어가서 JSON을 가져오는 URL을 적습니다.
 let = URL = 'https://UTM-URL-AFTER-SET-RULE'
 
 // UTM에서 공격이라 판단할 sip(source ip)와 dip(destination ip)를 적습니다.
@@ -36,8 +36,10 @@ let attackArray = ['at.ta.ck.ip', '123.23.234.123'];
 let attackPolicy = ['number'];
 
 // 한 sip가 몇 개의 서로 다른 dip를 가질 때 공격이라 간주할 지 정하는 개수입니다. 
-let ATTACK_COUNT = 10;
+let NETWORK_SCAN_NUMBER = 10;
 
+// 하나의 sip가 10개 이상의 다른 dport로 패킷이 올 때 포트 스캔으로 간주하는 개수입니다.
+let PORT_SCAN_NUMBER =10;
 
 // 공격이라 간주한 sip가 알람을 울리고나서, 언제 다시 알람을 울릴지 정하는 쿠키, 초 단위입니다.
 let COOKIE_TIME =  4000;
@@ -45,10 +47,47 @@ let COOKIE_TIME =  4000;
 
 //↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ 변경하는 곳 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
+
 // 공격 발생시 만들 오디오 객체 변수
 let audio
 
+////////////////////// CSS ///////////////////////////////////
 
+let eventLog = '';
+
+let warningDiv = document.createElement('div');
+
+warningDiv.addEventListener("click", function(){
+  warningDiv.style.display = 'none';
+  warningDiv.style.textContent = "공격이 의심됩니다. ";
+});
+
+
+warningDiv.id = 'warning';
+warningDiv.style.display = 'none';
+warningDiv.style.position = 'fixed';
+warningDiv.style.top = '0';
+warningDiv.style.left = '0';
+warningDiv.style.width = '100%';
+warningDiv.style.height = '100%';
+warningDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
+
+let warningText = document.createElement('p');
+warningText.style.postion = 'absolute';
+warningText.style.top = '50%';
+warningText.style.left = '50%';
+warningText.style.transform = 'translate(-50%, -50%)';
+warningText.style.color = 'black';
+warningText.style.fontsize = '30px';
+
+warningDiv.appendChild(warningText);
+
+let body = document.getElementsByTagName('body')[0];
+body.appendChild(warningDiv);
+
+
+
+///////////////// 핵심 함수 //////////////////////
 
 function getDataFromURL() {
     let sipArray = [];
@@ -68,6 +107,8 @@ function getDataFromURL() {
 
             const objects = JSON.parse(elements);
             const objectList = Object.values(objects);
+
+            objectList[1] = objectList[1].reversed();
             
 /////////////// attackPolicy 배열에 들어있는 IP가 있는 지 확인하는 부분 ///////////
             
@@ -86,6 +127,29 @@ function getDataFromURL() {
                     setCookie("attack_정책_" + matchingPolicy[i], matchingPolicy[i], COOKIE_TIME);
                     console.log("!!!!! 정책_" + matchingPolicy[i] + " 에 해당하는 공격이 감지 됐습니다. !!!");
                     console.log("attack_정책_" + matchingPolicy[i] + "쿠키를 만들었습니다.");
+
+
+                    // 첫 공격 시간 출력
+                    for (let i = 0; i <= objectList[1].length; i++){
+                      if (objectList[1][i].type === matchingPolicy[i]){
+
+                        eventLog = ` 첫 공격 시간은 : ${objectList[1][i].datetimeText} 입니다.
+                        목적지 주소는 : ${objectList[1][i].dip} 입니다.
+                        출발지 포트는 : ${objectList[1][i].sport} 입니다.
+                        목적지 포트는 : ${objectList[1][i].dport} 입니다. 
+                        
+                        `;
+
+                        console.log(eventLog);
+                        // 공격 로그 indexedDB에 저장
+                        saveAttackLogToDB(objectList[1][i]);
+
+                        break;
+                      }
+                    }
+
+                    turnBackgroundRed();
+                  
                 }
             }
 
@@ -112,18 +176,49 @@ function getDataFromURL() {
 ////////////// attackArray 배열에 들어있는 주소가 있을 경우, 쿠키 생성 및 알람을 울리는 부분 ///////////////////                 
 
             for (let i =0; i <= matchingIpArray.length ; i++){
+              
                 if (typeof matchingIpArray[i] !== 'undefined' && !checkCookie("attack_" + matchingIpArray[i])){
+                  
                     playMusicFromDB(1);
+                  
                     setCookie("attack_" + matchingIpArray[i], matchingIpArray[i], COOKIE_TIME);
+                  
                     console.log("!!!!! " + matchingIpArray[i] + " 에 해당하는 공격이 감지 됐습니다. !!!");
                     console.log("attack_" + matchingIpArray[i] + "쿠키를 만들었습니다.");
+
+                    // 첫 공격 시간 출력
+                    for (let i = 0; i <= objectList[1].length; i++){
+                        if (objectList[1][i].type === matchingIpArray[i]){
+
+                        eventLog = ` 첫 공격 시간은 : ${objectList[1][i].datetimeText} 입니다.
+                        목적지 주소는 : ${objectList[1][i].dip} 입니다.
+                        출발지 포트는 : ${objectList[1][i].sport} 입니다.
+                        목적지 포트는 : ${objectList[1][i].dport} 입니다. 
+                        
+                        `;
+
+                        console.log(eventLog);
+                        // 공격 로그 indexedDB에 저장
+                        saveAttackLogToDB(objectList[1][i]);
+
+                        break;
+                        }
+                    }
+                  turnBackgroundRed();
                 }
             }
-
+///////////////////////////////////// 네트워크 스캔 공격이 있는지 체크하는 부분///////////////////////////////
           
-            checkRealAttack(objectList[1], sipArray);
-          
+            checkNetworkScan(objectList[1], sipArray);
 
+
+
+////////////////////////////////////// 포트 스캔 공격이 있는지 체크하는 부분 ////////////////////////////////                  
+            
+
+
+////////////////////////////////////// 메모리 샤용량 체크 /////////////////////////////////////
+                  
             console.log(" alert_attack_on_UTM_based_on_json is on working ");
             
         })
@@ -138,8 +233,8 @@ id를 받아 indexedDB에 저장된 음악 데이터를 다시 가져와 실행�
 */
 //###########################
 function playMusicFromDB(id) {
-  const transaction = db.transaction([DB_STORE_NAME], 'readonly');
-  const objectStore = transaction.objectStore(DB_STORE_NAME);
+  const transaction = db.transaction([MUSIC_STORE], 'readonly');
+  const objectStore = transaction.objectStore(MUSIC_STORE);
   // id 인수에 담김 숫자로 오브젝트 스토어에서 데이터를 가져와 request에 넣음
   const request = objectStore.get(id);
 
@@ -192,9 +287,9 @@ indexedDB에 음악 파일 저장
 //############################
 function saveMusicToDB(musicBlob) {
   // music_store라는 오브젝트 스토어를 readwrite로 지정하고
-  const transaction = db.transaction([DB_STORE_NAME], 'readwrite');
+  const transaction = db.transaction([MUSIC_STORE], 'readwrite');
   // 오브젝트 스토어를 열고
-  const objectStore = transaction.objectStore(DB_STORE_NAME);
+  const objectStore = transaction.objectStore(MUSIC_STORE);
   // 받은 musicBlob을 저장함
   const request = objectStore.put({ id:1,  music: musicBlob });
 
@@ -209,6 +304,34 @@ function saveMusicToDB(musicBlob) {
     console.log('정상적으로 alert_attack_on_UTM_based_on_json이 실행되고 있습니다. ★ 스피커가 켜져있는 지 꼭 확인하세요! ★');
   };
 }
+
+//#################################
+/*
+json을 받으면, indexedDB에 저장하는 함수
+*/
+//#################################
+function saveAttackLogToDB(json) {
+  const transaction = db.transaction([ATTACK_LOG_STORE], 'readwrite');
+  
+  const objectStore = transaction.objectStore(ATTACK_LOG_STORE);
+  
+  const request = objectStore.add({
+    time: json.datetimeText, sip: json.sip, sport: json.sport,
+    dip: json.dip, dport: json.dport, service: json.service
+  });
+
+  request.onerror = function(event){
+    console.error(`공격 로그를 indexedDB에 올리는 데 실패했습니다.
+    F12 -> Application -> indexedDB를 초기화 후 다시 전체 코드를 실행해 주십쇼`, event.target.errorCode);
+  };
+
+  request.onsuccess = function(event) {
+    console.log(`공격 로그를 indexedDB에 올리기 성공했습니다. `, event.target.result);
+  };
+
+};
+
+
 
 //#################################
 /*
@@ -247,7 +370,7 @@ jsonArray와 jsonArray에서 중복을 제거한 sipArray를 인수로 받아, 1
 sip를 공격이라 간주하고 노래를 트는 함수
 */
 //#########################################
-function checkRealAttack(jsonArray, sipArray) {
+function checkNetworkScan(jsonArray, sipArray) {
 
   // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
   let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]:{}}), {});
@@ -262,7 +385,7 @@ function checkRealAttack(jsonArray, sipArray) {
       if (!attackObjs[sip].hasOwnProperty(dip)){
         attackObjs[sip][dip] = {};
 
-        if (attackCounts[sip] >= ATTACK_COUNT && !checkCookie("attack_" + sip)){
+        if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)){
           playMusicFromDB(1);
           setCookie("attack_" + sip, sip, COOKIE_TIME);
           console.log(sip + " 주소로부터 공격이 의심됩니다. ");
@@ -272,6 +395,23 @@ function checkRealAttack(jsonArray, sipArray) {
   }
 };
 
+//#########################################
+/*
+jsonArray와 jsonArray에서 중복을 제거한 sipArray를 인수로 받아, 10개 이상 다른 dip를 가진
+sip를 공격이라 간주하고 노래를 트는 함수
+*/
+//#########################################
+
+
+
+//#################################
+/*
+공격이 올 시 화면을 붉게 만드는 함수
+*/
+//#################################
+function turnBackgroundRed() {
+  document.getElementById("warning").style.display = "black";
+}
 
 
 
@@ -282,7 +422,8 @@ function checkRealAttack(jsonArray, sipArray) {
 // indexedDB 생성
 const DB_NAME = 'music_db';
 const DB_VERSION = 1;
-const DB_STORE_NAME = 'music_store';
+const MUSIC_STORE = 'music_store';
+const ATTACK_LOG_STORE = 'attack_log_store';
 
 let db;
 
@@ -299,8 +440,11 @@ request.onsuccess = function(event) {
 
 request.onupgradeneeded = function(event) {
   const db = event.target.result;
-  const objectStore = db.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
-  console.log('object store 생성 완료');
+  const objectStore = db.createObjectStore(MUSIC_STORE, { keyPath: 'id', autoIncrement: true });
+  const attackLog = db.createObjectStore(ATTACK_LOG_STORE, {
+    keyPath:'id', autoIncrement:true});
+  
+  console.log('object store 생성 및 업데이트 완료');
 };
 
 const fileInput = document.createElement('input');
