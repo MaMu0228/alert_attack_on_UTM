@@ -396,7 +396,7 @@ function checkNetworkScan(jsonArray, sipArray) {
         if (!attackObjs[sip].hasOwnProperty(dip)) {
           attackObjs[sip][dip] = {};
 
-          if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
+          if (Object.keys(attackObjs[sip]).length >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
             playMusicFromDB(1);
             setCookie("attack_" + sip, sip, COOKIE_TIME);
             console.log(sip + " 주소로부터 네트워크 스캔 공격이 의심됩니다. ");
@@ -406,7 +406,7 @@ function checkNetworkScan(jsonArray, sipArray) {
               if (jsonArray[i].type === matchingIpArray[i]) {
 
                 eventLog = `
-				첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+    			첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
               	목적지 주소는 : ${jsonArray[i].dip} 입니다.
               	출발지 포트는 : ${jsonArray[i].sport} 입니다.
                 목적지 포트는 : ${jsonArray[i].dport} 입니다. 
