@@ -406,12 +406,12 @@ function checkNetworkScan(jsonArray, sipArray) {
               if (jsonArray[i].type === matchingIpArray[i]) {
 
                 eventLog = `
-							첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
-              				목적지 주소는 : ${jsonArray[i].dip} 입니다.
-              				출발지 포트는 : ${jsonArray[i].sport} 입니다.
-                			목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+				첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              	목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              	출발지 포트는 : ${jsonArray[i].sport} 입니다.
+                목적지 포트는 : ${jsonArray[i].dport} 입니다. 
                         
-                           `;
+                `;
 
                 console.log(eventLog);
                 // 공격 로그 indexedDB에 저장
@@ -470,12 +470,12 @@ function checkPortScan(jsonArray, sipArray) {
               if (jsonArray[i].type === matchingIpArray[i]) {
 
                 eventLog = ` 
-						첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
-              			목적지 주소는 : ${jsonArray[i].dip} 입니다.
-              			출발지 포트는 : ${jsonArray[i].sport} 입니다.
-              			목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+				첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              	목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              	출발지 포트는 : ${jsonArray[i].sport} 입니다.
+              	목적지 포트는 : ${jsonArray[i].dport} 입니다. 
                         
-                        `;
+                `;
 
                 console.log(eventLog);
                 // 공격 로그 indexedDB에 저장
