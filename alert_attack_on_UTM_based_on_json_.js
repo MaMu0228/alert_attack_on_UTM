@@ -41,6 +41,10 @@ let NETWORK_SCAN_NUMBER = 10;
 // 하나의 sip가 10개 이상의 다른 dport로 패킷이 올 때 포트 스캔으로 간주하는 개수입니다.
 let PORT_SCAN_NUMBER =10;
 
+// 네트워크 스캔, 포트 스캔을 json이 몇 개 이상일 때 실행할지 정하는 숫자입니다.
+// ex) 1시간 내 패킷이 10개만 들어왔다면, 공격이 왔는지 체크 X
+let CHECK_NUMBER = 15;
+
 // 공격이라 간주한 sip가 알람을 울리고나서, 언제 다시 알람을 울릴지 정하는 쿠키, 초 단위입니다.
 let COOKIE_TIME =  4000;
 
@@ -214,10 +218,13 @@ function getDataFromURL() {
 
 
 ////////////////////////////////////// 포트 스캔 공격이 있는지 체크하는 부분 ////////////////////////////////                  
-            
 
+          
+            checkPortScan(objectList[1], sipArray);
 
 ////////////////////////////////////// 메모리 샤용량 체크 /////////////////////////////////////
+
+            checkMemory();
                   
             console.log(" alert_attack_on_UTM_based_on_json is on working ");
             
@@ -372,35 +379,156 @@ sip를 공격이라 간주하고 노래를 트는 함수
 //#########################################
 function checkNetworkScan(jsonArray, sipArray) {
 
-  // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
-  let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]:{}}), {});
+    if (jsonArray.length >= CHECK_NUMBER) {
 
-  const attackCounts = {};
 
-  for (const {sip, dip} of jsonArray){
-    
-    if (attackObjs.hasOwnProperty(sip)){
-      attackCounts[sip] = (attackCounts[sip] || 0) + 1;
-      
-      if (!attackObjs[sip].hasOwnProperty(dip)){
-        attackObjs[sip][dip] = {};
+        // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+        let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
 
-        if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)){
-          playMusicFromDB(1);
-          setCookie("attack_" + sip, sip, COOKIE_TIME);
-          console.log(sip + " 주소로부터 공격이 의심됩니다. ");
+        const attackCounts = {};
+
+        for (const {sip, dip}of jsonArray) {
+
+            if (attackObjs.hasOwnProperty(sip)) {
+                attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+
+                if (!attackObjs[sip].hasOwnProperty(dip)) {
+                    attackObjs[sip][dip] = {};
+
+                    if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
+                        playMusicFromDB(1);
+                        setCookie("attack_" + sip, sip, COOKIE_TIME);
+                        console.log(sip + " 주소로부터 네트워크 스캔 공격이 의심됩니다. ");
+
+                        // 첫 공격 시간 출력
+                        for (let i = 0; i <= jsonArray.length; i++) {
+                            if (jsonArray[i].type === matchingIpArray[i]) {
+
+                                eventLog = ` 첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              								목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              								출발지 포트는 : ${jsonArray[i].sport} 입니다.
+              								목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+                        
+                                            `;
+
+                                console.log(eventLog);
+                                // 공격 로그 indexedDB에 저장
+                                saveAttackLogToDB(jsonArray[i]);
+
+                                break;
+                            }
+                        }
+
+                        turnBackgroundRed();
+                    }
+                }
+            }
         }
-      }
     }
-  }
 };
+
+
+
+
 
 //#########################################
 /*
-jsonArray와 jsonArray에서 중복을 제거한 sipArray를 인수로 받아, 10개 이상 다른 dip를 가진
-sip를 공격이라 간주하고 노래를 트는 함수
+하나의 sip가 여러개의 dport를 가지는 체크해, 포트스캔 공격이 있는지 체크하는 함수
 */
 //#########################################
+function checkPortScan(jsonArray, sipArray) {
+
+    if (jsonArray.length >= CHECK_NUMBER) {
+
+
+        // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+        let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
+
+        const attackCounts = {};
+
+        for (const {sip, dport}of jsonArray) {
+
+            if (attackObjs.hasOwnProperty(sip)) {
+                attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+
+                if (!attackObjs[sip].hasOwnProperty(dport)) {
+                    attackObjs[sip][dport] = {};
+
+                    if (attackCounts[sip] >= NETWORK_PORT_NUMBER && !checkCookie("attack_" + sip)) {
+                        playMusicFromDB(1);
+                        setCookie("attack_" + sip, sip, COOKIE_TIME);
+                        console.log(sip + " 주소로부터 포트 스캔 공격이 의심됩니다. ");
+
+                        // 첫 공격 시간 출력
+                        for (let i = 0; i <= jsonArray.length; i++) {
+                            if (jsonArray[i].type === matchingIpArray[i]) {
+
+                                eventLog = ` 첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              								목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              								출발지 포트는 : ${jsonArray[i].sport} 입니다.
+              								목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+                        
+                                            `;
+
+                                console.log(eventLog);
+                                // 공격 로그 indexedDB에 저장
+                                saveAttackLogToDB(jsonArray[i]);
+
+                                break;
+                            }
+                        }
+
+                        turnBackgroundRed();
+                    }
+                }
+            }
+        }
+    }
+};
+
+
+
+
+//#################################
+/*
+메모리를 체크해, 브라우저의 메모리 한계에 도달해 꺼지기 직전 알람을 울리는 함수
+*/
+//#################################
+function checkMemory() {
+
+  if (window.performance && window.performance.memory){
+    let memoryInfo = window.performance.memory;
+    let usedHeapOfTotal = (memoryInfo.usedJSHeapSize / memoryInfo.totalJSHeapSize) * 100;
+    let usedHeapOfLimit = (memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit) * 100;
+
+    if (usedHeapOfTotal > 99){
+      console.log(`
+      현재 페이지에서 사용중인 메모리가 한계치의 99%이상에 도달했습니다.
+      현재 페이지 메모리 사용량 : ${usedHeapOfTotal.toFixed(2)}
+      ★ 메모리 사용량이 100%가 되면 페이지가 갑자기 로그아웃 될 수 있습니다. 
+      컴퓨터를 **재부팅** 하시길 추천드립니다. ★
+      *** 경고의 의미로 노래를 재생합니다. ***
+      `);
+      playMusicFromDB(1);
+    }
+
+    if (usedHeapOfLimit > 50){
+      console.log(`
+      현재 브라우저에 할당된 메모리가 한계치의 50%이상에 도달했습니다.
+      현재 브라우저 메모리 사용량 : ${usedHeapOfLimit.toFixed(2)}
+      ★ 메모리 사용량이 100%가 되면 페이지가 갑자기 로그아웃 될 수 있습니다. 
+      컴퓨터를 **재부팅** 하시길 추천드립니다. ★
+      *** 경고의 의미로 노래를 재생합니다. ***
+      `);
+      playMusicFromDB(1);
+    }
+    
+  } else{
+    console.log(" window.performance는 현재 브라우저에서 지원하지 않는 기능입니다. ");
+  }
+  
+}
+
 
 
 
