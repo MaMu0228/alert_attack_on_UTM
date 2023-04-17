@@ -379,52 +379,54 @@ sip를 공격이라 간주하고 노래를 트는 함수
 //#########################################
 function checkNetworkScan(jsonArray, sipArray) {
 
-    if (jsonArray.length >= CHECK_NUMBER) {
+  if (jsonArray.length >= CHECK_NUMBER) {
 
 
-        // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
-        let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
+    // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+    let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
 
-        const attackCounts = {};
+    const attackCounts = {};
 
-        for (const {sip, dip}of jsonArray) {
 
-            if (attackObjs.hasOwnProperty(sip)) {
-                attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+    for (const {sip, dip} of jsonArray) {
 
-                if (!attackObjs[sip].hasOwnProperty(dip)) {
-                    attackObjs[sip][dip] = {};
+      if (attackObjs.hasOwnProperty(sip)) {
+        attackCounts[sip] = (attackCounts[sip] || 0) + 1;
 
-                    if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
-                        playMusicFromDB(1);
-                        setCookie("attack_" + sip, sip, COOKIE_TIME);
-                        console.log(sip + " 주소로부터 네트워크 스캔 공격이 의심됩니다. ");
+        if (!attackObjs[sip].hasOwnProperty(dip)) {
+          attackObjs[sip][dip] = {};
 
-                        // 첫 공격 시간 출력
-                        for (let i = 0; i <= jsonArray.length; i++) {
-                            if (jsonArray[i].type === matchingIpArray[i]) {
+          if (attackCounts[sip] >= NETWORK_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
+            playMusicFromDB(1);
+            setCookie("attack_" + sip, sip, COOKIE_TIME);
+            console.log(sip + " 주소로부터 네트워크 스캔 공격이 의심됩니다. ");
 
-                                eventLog = ` 첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
-              					목적지 주소는 : ${jsonArray[i].dip} 입니다.
-              					출발지 포트는 : ${jsonArray[i].sport} 입니다.
-                				목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+            // 첫 공격 시간 출력
+            for (let i = 0; i <= jsonArray.length; i++) {
+              if (jsonArray[i].type === matchingIpArray[i]) {
+
+                eventLog = `
+							첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              				목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              				출발지 포트는 : ${jsonArray[i].sport} 입니다.
+                			목적지 포트는 : ${jsonArray[i].dport} 입니다. 
                         
-                                            `;
+                           `;
 
-                                console.log(eventLog);
-                                // 공격 로그 indexedDB에 저장
-                                saveAttackLogToDB(jsonArray[i]);
+                console.log(eventLog);
+                // 공격 로그 indexedDB에 저장
+                saveAttackLogToDB(jsonArray[i]);
 
-                                break;
-                            }
-                        }
-
-                        turnBackgroundRed();
-                    }
-                }
+                break;
+              }
             }
+
+            turnBackgroundRed();
+          }
         }
+      }
     }
+  }
 };
 
 
@@ -438,52 +440,57 @@ function checkNetworkScan(jsonArray, sipArray) {
 //#########################################
 function checkPortScan(jsonArray, sipArray) {
 
-    if (jsonArray.length >= CHECK_NUMBER) {
+  if (jsonArray.length >= CHECK_NUMBER) {
 
 
-        // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
-        let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
+    // sipArray에 들어있는 sip들을 객체로 모두 초기화하기
+    let attackObjs = sipArray.reduce((acc, cur) => ({...acc, [cur]: {}}), {});
 
-        const attackCounts = {};
+    const attackCounts = {};
+    const dportCounts = {};
 
-        for (const {sip, dport}of jsonArray) {
+    for (const {sip,dport} of jsonArray) {
 
-            if (attackObjs.hasOwnProperty(sip)) {
-                attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+      if (attackObjs.hasOwnProperty(sip)) {
+        attackCounts[sip] = (attackCounts[sip] || 0) + 1;
+        dportCounts[sip] = dportCounts[sip] || new Set();
+        dportCounts[sip].add(dport);
 
-                if (!attackObjs[sip].hasOwnProperty(dport)) {
-                    attackObjs[sip][dport] = {};
 
-                    if (attackCounts[sip] >= NETWORK_PORT_NUMBER && !checkCookie("attack_" + sip)) {
-                        playMusicFromDB(1);
-                        setCookie("attack_" + sip, sip, COOKIE_TIME);
-                        console.log(sip + " 주소로부터 포트 스캔 공격이 의심됩니다. ");
+        if (!attackObjs[sip].hasOwnProperty(dport)) {
+          attackObjs[sip][dport] = {};
 
-                        // 첫 공격 시간 출력
-                        for (let i = 0; i <= jsonArray.length; i++) {
-                            if (jsonArray[i].type === matchingIpArray[i]) {
+          if (dportCounts[sip].size >= PORT_SCAN_NUMBER && !checkCookie("attack_" + sip)) {
+            playMusicFromDB(1);
+            setCookie("attack_" + sip, sip, COOKIE_TIME);
+            console.log(sip + " 주소로부터 포트 스캔 공격이 의심됩니다. ");
 
-                                eventLog = ` 첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
-              					목적지 주소는 : ${jsonArray[i].dip} 입니다.
-              					출발지 포트는 : ${jsonArray[i].sport} 입니다.
-              					목적지 포트는 : ${jsonArray[i].dport} 입니다. 
+            // 첫 공격 시간 출력
+            for (let i = 0; i <= jsonArray.length; i++) {
+              if (jsonArray[i].type === matchingIpArray[i]) {
+
+                eventLog = ` 
+						첫 공격 시간은 : ${jsonArray[i].datetimeText} 입니다.
+              			목적지 주소는 : ${jsonArray[i].dip} 입니다.
+              			출발지 포트는 : ${jsonArray[i].sport} 입니다.
+              			목적지 포트는 : ${jsonArray[i].dport} 입니다. 
                         
-                                            `;
+                        `;
 
-                                console.log(eventLog);
-                                // 공격 로그 indexedDB에 저장
-                                saveAttackLogToDB(jsonArray[i]);
+                console.log(eventLog);
+                // 공격 로그 indexedDB에 저장
+                saveAttackLogToDB(jsonArray[i]);
 
-                                break;
-                            }
-                        }
-
-                        turnBackgroundRed();
-                    }
-                }
+                break;
+              }
             }
+
+            turnBackgroundRed();
+          }
         }
+      }
     }
+  }
 };
 
 
