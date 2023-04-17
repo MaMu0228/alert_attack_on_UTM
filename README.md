@@ -7,9 +7,9 @@ then literally it catures packets which you want to alert with song.
 
 ★ functions ★
 <br>
-1. when specific sip or dip packet go through UTM, alert 
-2. when packet go through UTM which is applied specific policy, alert
-3. when packets, which one sip go to many and various dip, go through UTM, alert
+1. when specific sip or dip packet goes through UTM, alert 
+2. when packet goes through UTM which is applied specific policy, alert
+3. when packets, which one sip goes to many and various dip, goes through UTM, alert
 4. when UTM logout, alert
  
 -----------한글------------
@@ -125,14 +125,37 @@ URI 형태로 변환 후 JSON URL에 삽입해 fetch로 사용하기
 ★문제 13 : <br>
 UTM의 관제가 시간이 지나면 세션 키가 만료되거나, 윈도우 메모리의 부족으로 자동으로 로그아웃되는 현상이 있을 때 알람을 울리게 만들자
 --
-(해결법) 현재 진행형 // 대략 window.addEventListner의 'beforeunload' 이벤트를 사용하면 될 것 같다.
+(해결법) 4일 소요 //  
+메모리가 가득차서 브라우저가 종료되는 건 코드 자체가 초기화 되기에, 자바스크립트에서 어쩔 수 없다.
+window.addEventListner의 'beforeunload' 이벤트를 사용해 로그아웃시 알람을 울리고
+window.performance.memory 객체를 이용해 페이지 메모리 사용량이 99% 이상 될 시 알람을 울리게 만들었다.
 
+★문제 14 : <br>
+페이지를 새로고침하면, 이전에 공격이 왔을 때 잘 알람을 울렸는지 기록을 찾아볼 수가 없음, 기록해둘 필요성을 느낌
+--
+(해결법) 1일 소요 //
+공격 알람을 울릴 때, IndexedDB에 공격 패킷의 정보들을 기록하게 만듦
 
+★문제 15 : <br>
+포트 스캔 공격이 오면 어떻게 하지?
+--
+(해결법) 7일 소요 //
+네트워크 스캔 알고리즘을 변형해서, 하나의 sip가 일정 개수 이상의 dip를 가질 경우 알람을 울리게 함
 
-
-
+★문제 16 : <br>
+공격이 왔을 때 최초의 공격 패킷의 시간을 방화벽에서 찾는 게 귀찮음, 공격이 올 경우 바로 첫 패킷의 시간과 기타 필요한 정보를 보여주게 하자
+--
+(해결법) 3일 소요 //
+UTM에서 받아오는 jsonArray는 시간이 역순을 돼 있기에, 다시 순서를 반대로 돌리고
+공격을 탐지할 당시의 sip를 통해서, jsonArray의 첫 번째 sip의 시간과 정보들을 console에 띄움
+차후 UTM 관제 페이지에서 반투명의 알람창에 정보를 보낼 수 있게, 전역 변수에 알람할 정보를 저장하는 것까지 함
 */
 
+★문제 17 : <br>
+매 10초마다 모든 jsonArray에 대해서 포트스캔, 네트워크 스캔을 하면 많은 자원을 사용하게 됨, 불필요한 계산을 줄일 방법이 없을까?
+--
+(해결법) 1일 소요 //
+jsonArray를 받아올 때, jsonArray의 길이가 15 이상이 아니면 네트워크 스캔, 포트 스캔 검사를 안하게 만들어서, 불필요한 계산을 줄임
 
 
 
