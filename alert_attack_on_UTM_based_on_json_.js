@@ -1,6 +1,6 @@
 /********************************************************
 
-// alert_attack_on_UTM_based_on_json v1.2
+// alert_attack_on_UTM_based_on_json v1.4
 
 ★★★★★★ Made by MaMu0228 ★★★★★★
 
@@ -56,17 +56,18 @@ let COOKIE_TIME =  4000;
 let audio
 
 ////////////////////// CSS ///////////////////////////////////
-
+// 공격이 있을 때 화면에 띄울려고 선언해둔 전역 변수
 let eventLog = '';
-
+// 공격이 왔을 때 문구를 띄울 공간용 요소
 let warningDiv = document.createElement('div');
 
+// 클릭을 했을 때 띄울 문자열
 warningDiv.addEventListener("click", function(){
   warningDiv.style.display = 'none';
   warningDiv.style.textContent = "공격이 의심됩니다. ";
 });
 
-
+////////// 공격일 올 시 화면을 붉게 만드는 요소 //////
 warningDiv.id = 'warning';
 warningDiv.style.display = 'none';
 warningDiv.style.position = 'fixed';
@@ -76,6 +77,7 @@ warningDiv.style.width = '100%';
 warningDiv.style.height = '100%';
 warningDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
 
+////////// 공격이 올 시 관련 정보를 띄우는 요소 //////
 let warningText = document.createElement('p');
 warningText.style.postion = 'absolute';
 warningText.style.top = '50%';
@@ -94,36 +96,41 @@ body.appendChild(warningDiv);
 ///////////////// 핵심 함수 //////////////////////
 
 function getDataFromURL() {
-    let sipArray = [];
-    let dipArray = [];
-    let policyArray = [];
+    let sipArray = []; // json에서 중복을 제거한 sip를 모아둔 배열
+    let dipArray = []; // json에서 중복을 제거한 dip를 모아둔 배열
+    let policyArray = []; // json에서 중복을 제거한 정책 번호를 모아둔 배열
 
+
+///// fetch로 받아온 데이터를 html --> innerText --> jSON 변경 과정 ///////
     fetch(ruleURL)
-        .then(response => response.text())
+        .then(response => response.text()) // text 가져오기
         .then(data => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(data, 'text/html');
-            const elements = htmlDoc.body.innerText;
+            const parser = new DOMParser(); // text를 DOM으로 변경
+            const htmlDoc = parser.parseFromString(data, 'text/html'); // html로 변경
+            const elements = htmlDoc.body.innerText; // html안에 있는 body의 innerText를 가져오기
 
             if (typeof elements === 'undefined'){
                 console.log("elements가 비어있습니다. ");
             }
 
-            const objects = JSON.parse(elements);
-            const objectList = Object.values(objects);
+            const objects = JSON.parse(elements); // 가져온 innerText를 json으로 변경
+            const objectList = Object.values(objects); // json에 있는 값들을 
 
-            objectList[1] = objectList[1].reversed();
+            objectList[1] = objectList[1].reversed(); // 로그가 들어있는 배열은 objectList[1]부터이고, 처음 json에 들어있는 데이터가 시간 역순이라서, 시간 순서에 맞게 하기 위해 거꾸로 만들기
             
 /////////////// attackPolicy 배열에 들어있는 IP가 있는 지 확인하는 부분 ///////////
             
-            let matchingPolicy = [];
+            let matchingPolicy = []; // 맨 위에 정의했던 attackPolicy[]에 들어있는 '정책 번호 문자열'이 json에 있을 경우 저장할 용도인 배열
 
-            policyArray = objectList[1].map(obj => obj.type).filter(type => type !== undefined);
-
-            var set = new Set(policyArray);
+            policyArray = objectList[1].map(obj => obj.type).filter(type => type !== undefined); // 
+		
+///////////////// 중복된 요소들을 제거하기 위해 Set 자료형으로 바꿨다가 다시 배열로 바꾸기 ////////////////
+            var set = new Set(policyArray); 
             policyArray = [...set];
 
-            matchingPolicy.push(...policyArray.filter(value => attackPolicy.includes(value)));
+/////// attackPolicy배열에 들어있는 값과 json에서 중복을 제거하고 가져온 policyArray배열을 비교 후, 같은 '정책 번호 문자열'
+/////// 이 있으면 matchingPolicy 배열에 추가
+            matchingPolicy.push(...policyArray.filter(value => attackPolicy.includes(value)));  
 
             for (let i =0; i <= matchingPolicy.length ; i++){
                 if (typeof matchingPolicy[i] !== 'undefined' && !checkCookie("attack_정책_" + matchingPolicy[i])){
@@ -169,7 +176,8 @@ function getDataFromURL() {
             matchingIpArray = sipArray.filter(value => attackArray.includes(value));
 
 ////////////// dipArray배열과 json.dip 주소를 가져와 비교해 처리하는 부분 ///////////////////            
-
+	    
+	     
             dipArray = objectList[1].map(obj => obj.dip).filter(dip => dip !== undefined);
 
             var set = new Set(dipArray);
