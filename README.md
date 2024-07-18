@@ -25,7 +25,7 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 3. When specific policy packet goes through UTM, Alert song and Show the packet information on console window
 4. When UTM logout, Alert
 5. When Alert is activated, Save the packet in IndexedDB
-6. When Alerting is activated, The page turns to red color(Click any place to turn back) 
+6. When Alerting, The page turns to red color(Click any place to turn back) 
 
 <br>
 -----------한글------------
