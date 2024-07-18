@@ -21,8 +21,8 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 ★ functions ★
 <br>
 1. When specific sip or dip packet goes through UTM, Alert song and Show the packet information on console window 
-2. Alert when Network scan or Port scan is going on and Show the packet information on console window
-3. When packet goes through UTM which is applied specific policy, Alert song and Show the packet information on console window
+2. Alert when Network scan or Port scan is suspected and Show the packet information on console window
+3. When specific policy packet goes through UTM, Alert song and Show the packet information on console window
 4. When UTM logout, Alert
 5. When Alert is activated, Save the packet in IndexedDB
 6. When Alerting is activated, The page turns to red color(Click any place to turn back) 
@@ -46,7 +46,7 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 <br>
 
 1. 특정 sip나 dip를 가진 패킷이 UTM에 들어올 경우, 알람을 울리고 패킷 정보를 Console 창에 띄웁니다.
-2. 네트워크 스캔이나 포트 스캔이 있을 경우, 알람을 울리고 패킷 정보를 Console 창에 띄웁니다.
+2. 네트워크 스캔이나 포트 스캔이 의심될 때, 알람을 울리고 패킷 정보를 Console 창에 띄웁니다.
 3. 특정 정책이 적용돼 차단되거나 허용된 패킷이 들어올 경우, 알람을 울리고 패킷 정보를 Console 창에 띄웁니다.
 4. UTM이 로그아웃된 경우, 알람을 울림
 5. 알람을 울릴 때의 패킷 정보를 IndexedDB에 저장함
