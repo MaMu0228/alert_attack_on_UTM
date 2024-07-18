@@ -2,15 +2,24 @@
 
 Here are two version browser console JSfile, If your UTM work based on JSON, use "alert_attack_on_UTM_based_on_json.js", otherwise "alert_attack_on_UTM_based_on_class"
 <br><br>
-Copy all codes in JSfile and paste browser console after log in UTM
-then literally it catures packets which you want to alert with song. 
+# HOW TO USE 
+1. Login the UTM
+2. Move the traffic page in UTM
+3. Edit JavaScript code for your enviroment
+4. Copy the JavaScript in "Alert_attack_on_UTM_based_on_json.js" or "Alert_attack_on_UTM_based_on_class"
+   (★ Alert_attack_on_UTM_based_on_json.js has more many function ★)
+5. Press 'F12' button and Move 'Console'
+6. Paste the code on 'Console'
+7. Press 'Enter' button
+8. Select song file for alert
+9. Done
 
 ★ functions ★
 <br>
-1. when specific sip or dip packet goes through UTM, alert 
-2. when packet goes through UTM which is applied specific policy, alert
-3. when packets, which one sip goes to many and various dip, goes through UTM, alert
-4. when UTM logout, alert
+1. When specific sip or dip packet goes through UTM, alert 
+2. When packet goes through UTM which is applied specific policy, alert
+3. When packets, which one sip goes to many and various dip, goes through UTM, alert
+4. When UTM logout, alert
  
 -----------한글------------
 
@@ -20,9 +29,12 @@ UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공
 <br>
 <strong>"UTM의 관제 패킷 정보가 html의 body담겨 오는 경우"엔</strong> 
 'alert_attack_on_UTM_based_on_class.js'를 사용해주시고
+<strong>(alert_attack_on_UTM_based_on_json.js가 더 많은 기능을 가지고 있습니다)</strong>
 <br>
 <strong>"UTM의 관제 패킷 정보가 JSON을 통해 오는 경우"엔</strong>
 'alert_attack_on_UTM_based_on_json.js'를 사용해주시면 됩니다.
+
+
 
 <br>
 ★ 기능들 ★
@@ -39,6 +51,7 @@ UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공
 4. UTM이 로그아웃된 경우, 알람을 울림
 <br>
 <br>
+5. 알람을 울릴 때의 패킷 정보를 IndexedDB에 저장함
 /*
 ****** 개발하다 마주친 문제 및 고생한 점과 해결법들 ******
 
