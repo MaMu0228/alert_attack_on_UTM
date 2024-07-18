@@ -16,42 +16,38 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 
 ★ functions ★
 <br>
-1. When specific sip or dip packet goes through UTM, alert 
-2. When packet goes through UTM which is applied specific policy, alert
-3. When packets, which one sip goes to many and various dip, goes through UTM, alert
-4. When UTM logout, alert
- 
+1. When specific sip or dip packet goes through UTM, Alert
+2. Alert when Network scan or Port scan is going on
+3. When packet goes through UTM which is applied specific policy, Alert
+4. When packets, which one sip goes to many and various dip, goes through UTM, Alert
+5. When UTM logout, Alert
+6. When Alert is activated, Save the packet in IndexedDB
+7. When Alerting is activated, The page turns to red color(Click any place to turn back) 
 -----------한글------------
 
-UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공격 알람 Javascript code 입니다.
-<br>
-관제 패킷이 "그냥 html의 body에 들어오는 경우"와 "JSON을 통해 받아오는 경우"를 나눠 스크립트를 만들었습니다.
-<br>
-<strong>"UTM의 관제 패킷 정보가 html의 body담겨 오는 경우"엔</strong> 
-'alert_attack_on_UTM_based_on_class.js'를 사용해주시고
-<strong>(alert_attack_on_UTM_based_on_json.js가 더 많은 기능을 가지고 있습니다)</strong>
-<br>
-<strong>"UTM의 관제 패킷 정보가 JSON을 통해 오는 경우"엔</strong>
-'alert_attack_on_UTM_based_on_json.js'를 사용해주시면 됩니다.
+# 사용법
 
+1. UTM에서 로그인을 합니다.
+2. UTM에서 관제하는 트래픽 창으로 이동합니다.
+3. JavaScript 코드를 자신의 UTM 환경에 맞춰서 변경합니다
+4. 'F12'를 누르고 'Console'로 이동합니다
+5. JavaScript 코드를 복사 후 'Console'에 붙여넣고 실행합니다
+6. 파일 선택창이 나올텐데, 알람으로 사용할 음악 파일을 선택합니다
+7. 끝입니다.
 
 
 <br>
 ★ 기능들 ★
 <br>
+
 1. 특정 sip나 dip를 가진 패킷이 UTM에 들어올 경우, 알람을 울림
+2. 네트워크 스캔이나 포트 스캔이 있을 경우, 알람을 울림
+3. 특정 정책이 적용돼 차단되거나 허용된 패킷이 들어올 경우, 알람을 울림
+4. 하나의 sip가 여러개의 dip를 가진 경우, 알람을 울림
+5. UTM이 로그아웃된 경우, 알람을 울림
+6. 알람을 울릴 때의 패킷 정보를 IndexedDB에 저장함
+7. 알람이 울릴 때, 페이지의 색깔이 붉은 색으로 변합니다(아무 곳이나 누르면 다시 원래대로 돌아옵니다)
 
-
-2. 특정 정책이 적용돼 차단되거나 허용된 패킷이 들어올 경우, 알람을 울림
-
-
-3. 하나의 sip가 여러개의 dip를 가진 경우, 알람을 울림
-
-
-4. UTM이 로그아웃된 경우, 알람을 울림
-<br>
-
-5. 알람을 울릴 때의 패킷 정보를 IndexedDB에 저장함
 
 
 <strong>/******
