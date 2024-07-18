@@ -4,14 +4,14 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 <br>
 <strong>BUT!!!</strong>
 <br>
-"alert_attack_on_UTM_based_on_json.js" has more many functions !!!
+"alert_attack_on_UTM_based_on_json.js" has more functions !!!
 <br><br>
 # HOW TO USE 
 1. Login the UTM
 2. Move to the traffic page in UTM
 3. Edit JavaScript code for your enviroment
 4. Copy the JavaScript in "Alert_attack_on_UTM_based_on_json.js" or "Alert_attack_on_UTM_based_on_class"
-   (★ Alert_attack_on_UTM_based_on_json.js has more many function ★)
+   (★ Alert_attack_on_UTM_based_on_json.js has more function ★)
 5. Press 'F12' button and Move 'Console'
 6. Paste the code on 'Console'
 7. Press 'Enter' button
