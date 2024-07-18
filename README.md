@@ -12,7 +12,7 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 3. Edit JavaScript code for your enviroment
 4. Copy the JavaScript in "Alert_attack_on_UTM_based_on_json.js" or "Alert_attack_on_UTM_based_on_class"
    (★ Alert_attack_on_UTM_based_on_json.js has more function ★)
-5. Press 'F12' button and Move 'Console'
+5. Press 'F12' button and Move to 'Console'
 6. Paste the code on 'Console'
 7. Press 'Enter' button
 8. Select song file for alert
