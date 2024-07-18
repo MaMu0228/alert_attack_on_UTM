@@ -4,7 +4,7 @@ Here are two version browser console JSfile, If your UTM work based on JSON, use
 <br><br>
 # HOW TO USE 
 1. Login the UTM
-2. Move the traffic page in UTM
+2. Move to the traffic page in UTM
 3. Edit JavaScript code for your enviroment
 4. Copy the JavaScript in "Alert_attack_on_UTM_based_on_json.js" or "Alert_attack_on_UTM_based_on_class"
    (★ Alert_attack_on_UTM_based_on_json.js has more many function ★)
@@ -53,7 +53,10 @@ UTM에서 로그인 후, console에 붙여넣기 해 사용 가능한 알람 공
 <br>
 5. 알람을 울릴 때의 패킷 정보를 IndexedDB에 저장함
 /*
-****** 개발하다 마주친 문제 및 고생한 점과 해결법들 ******
+
+<strong>/****** 
+개발하다 마주친 문제 및 고생한 점과 해결법들 
+******/</strong>
 
 ★문제 1 : <br>
 보안 때문에 '인터넷'과 자바스크립트 외 '다른 개발 언어들'(파이썬, C, C++, C#) 등의 언어는 사용할 수 없음
